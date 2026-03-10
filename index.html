@@ -500,29 +500,66 @@
     
     // Calculate
     function parseTime(t) { return t==='finish'?360:(+t.split(':')[0])*60+(+t.split(':')[1]); }
-    function formatTime(m) { 
-      // For pace (minutes per km/mile), show MM:SS
-      const mins = Math.floor(m);
-      const secs = Math.round((m - mins) * 60);
-      return `${mins}:${secs.toString().padStart(2,'0')}`;
+    function formatTime(m, isPace = false) { 
+      // If pace (< 60 mins) or total time, format accordingly
+      if (m < 60 || isPace) {
+        const mins = Math.floor(m);
+        const secs = Math.round((m - mins) * 60);
+        return `${mins}:${secs.toString().padStart(2,'0')}`;
+      } else {
+        // For total times over 1 hour
+        const hrs = Math.floor(m / 60);
+        const mins = Math.floor(m % 60);
+        const secs = Math.round((m - Math.floor(m)) * 60);
+        return `${hrs}:${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+      }
     }
     
-    // Famous runners database
-    const famousRunners = [
-      {name: 'Eliud Kipchoge 🏆', pace: 170, desc: 'GOAT of marathons'},
-      {name: 'Kelvin Kiptum ⚡', pace: 172, desc: 'World record holder'},
-      {name: 'Haile Gebrselassie 🏃', pace: 180, desc: 'Legendary Ethiopian'},
-      {name: 'Mo Farah 🇬🇧', pace: 185, desc: 'Olympic champion'},
-      {name: 'Paula Radcliffe 🇬🇧', pace: 195, desc: 'Women\'s world record'},
-      {name: 'Kenenisa Bekele 🏃', pace: 200, desc: 'Distance legend'},
-      {name: 'Kara Goucher 🏃‍♀️', pace: 210, desc: 'American star'},
-      {name: 'Ryan Reynolds 🎬', pace: 230, desc: 'Actor who runs!'},
-      {name: 'Dylan O\'Brien 🎬', pace: 250, desc: 'Runner actor'},
-      {name: 'Jonah Hill 🎭', pace: 270, desc: 'Comedian on transformation'},
-      {name: 'Oprah Winfrey 📺', pace: 285, desc: 'Media mogul marathoner'},
-      {name: 'Usain Bolt ⚡', pace: 300, desc: 'Fastest man tries marathon'},
-      {name: 'Will Smith 🎤', pace: 330, desc: 'Fresh prince of running'}
-    ];
+    // Famous runners database - pace in min/km for different distances
+    const famousRunners = {
+      marathon: [
+        {name: 'Eliud Kipchoge 🏆', pace: 2.52, desc: 'GOAT of marathons'},
+        {name: 'Kelvin Kiptum ⚡', pace: 2.87, desc: 'World record holder'},
+        {name: 'Haile Gebrselassie 🏃', pace: 3.00, desc: 'Legendary Ethiopian'},
+        {name: 'Mo Farah 🇬🇧', pace: 3.05, desc: 'Olympic champion'},
+        {name: 'Paula Radcliffe 🇬🇧', pace: 3.05, desc: 'Women\'s WR'},
+        {name: 'Kenenisa Bekele 🏃', pace: 3.20, desc: 'Distance legend'},
+        {name: 'Ryan Reynolds 🎬', pace: 4.15, desc: 'Actor who runs!'},
+        {name: 'Oprah Winfrey 📺', pace: 5.40, desc: 'Media mogul marathoner'},
+        {name: 'Will Smith 🎤', pace: 6.00, desc: 'Fresh prince of running'}
+      ],
+      half: [
+        {name: 'Jacob Kiplimo 🏃', pace: 2.42, desc: 'World record'},
+        {name: 'Mo Farah 🇬🇧', pace: 2.55, desc: 'Olympic champ'},
+        {name: 'Haile Gebrselassie 🏃', pace: 2.58, desc: 'Legend'},
+        {name: 'Paula Radcliffe 🇬🇧', pace: 3.00, desc: 'Women\'s record'},
+        {name: 'Ryan Reynolds 🎬', pace: 4.00, desc: 'Actor runner!'},
+        {name: 'Jonah Hill 🎭', pace: 5.00, desc: 'Comedian transformation'}
+      ],
+      '10k': [
+        {name: 'Joshua Cheptegei ⚡', pace: 2.43, desc: 'World record'},
+        {name: 'Kenyan stars 🏃', pace: 2.50, desc: 'Elite Kenyan'},
+        {name: 'Mo Farah 🇬🇧', pace: 2.53, desc: 'Olympic champ'},
+        {name: 'Haile Gebrselassie 🏃', pace: 2.55, desc: 'Legend'},
+        {name: 'Parkrun regular 🏃', pace: 3.30, desc: 'Sub 35 min!'},
+        {name: 'Coffee runner ☕', pace: 5.00, desc: 'Casual runner'}
+      ],
+      '5k': [
+        {name: 'Joshua Cheptegei ⚡', pace: 2.32, desc: 'World record'},
+        {name: 'Berhane Adere 🏃', pace: 2.55, desc: 'Olympic champ'},
+        {name: 'Mo Farah 🇬🇧', pace: 2.52, desc: 'Distance king'},
+        {name: '5K club member 🏃', pace: 3.20, desc: 'Sub 17 min!'},
+        {name: 'Fun runner 🎉', pace: 4.30, desc: 'Having fun!'},
+        {name: 'Starting out 🌱', pace: 6.00, desc: 'Beginner'}
+      ]
+    };
+    
+    function getRunnersForDistance(dist) {
+      if (dist >= 40) return famousRunners.marathon;
+      if (dist >= 20) return famousRunners.half;
+      if (dist >= 8) return famousRunners['10k'];
+      return famousRunners['5k'];
+    }
     
     function calculate() {
       const goal = document.getElementById('goalTime').value.trim();
@@ -536,20 +573,20 @@
       
       const kmPace = total / distance;
       
-      document.getElementById('avgPace').textContent = formatTime(kmPace);
-      document.getElementById('avgMile').textContent = formatTime(kmPace * 1.60934);
+      document.getElementById('avgPace').textContent = formatTime(kmPace, true);
+      document.getElementById('avgMile').textContent = formatTime(kmPace * 1.60934, true);
       document.getElementById('splitTime').textContent = formatTime(total / 2);
       
-      // Find closest famous runner
-      const goalMinutes = total;
-      const closest = famousRunners.reduce((prev, curr) => 
-        Math.abs(curr.pace - goalMinutes) < Math.abs(prev.pace - goalMinutes) ? curr : prev
+      // Find closest famous runner based on distance
+      const runners = getRunnersForDistance(distance);
+      const closest = runners.reduce((prev, curr) => 
+        Math.abs(curr.pace - kmPace) < Math.abs(prev.pace - kmPace) ? curr : prev
       );
       
       const famousBox = document.getElementById('famousRunner');
       const famousName = document.getElementById('famousName');
       famousBox.style.display = 'block';
-      famousName.innerHTML = `${closest.name} — ${closest.desc} (ran ${formatTime(closest.pace)})`;
+      famousName.innerHTML = `${closest.name} — ${closest.desc} (${formatTime(closest.pace, true)}/km)`;
       
       document.getElementById('results').classList.add('show');
     }
