@@ -6,80 +6,161 @@
   <title>Running Info | First Marathon</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    
     :root {
       --primary: #ff6b35;
-      --dark: #1a1a2e;
-      --light: #f7f7f7;
-      --card: #ffffff;
-      --text: #333;
+      --bg: #f7f7f7;
+      --card: #fff;
+      --text: #1a1a2e;
       --text-light: #666;
-      --green: #22c55e;
-      --blue: #3b82f6;
+      --border: #eee;
     }
+    
+    [data-theme="dark"] {
+      --bg: #0f0f1a;
+      --card: #1a1a2e;
+      --text: #f0f0f0;
+      --text-light: #aaa;
+      --border: #333;
+    }
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     
     body {
       font-family: 'Inter', sans-serif;
-      background: var(--light);
+      background: var(--bg);
       color: var(--text);
       min-height: 100vh;
+      transition: background 0.3s, color 0.3s;
     }
     
-    .hero {
-      background: linear-gradient(135deg, var(--dark) 0%, #16213e 100%);
+    .banner {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
       color: white;
-      padding: 2rem 1.5rem;
+      padding: 2.5rem 1.5rem;
       text-align: center;
+      position: relative;
+      overflow: hidden;
     }
     
-    .hero h1 {
-      font-size: 2rem;
+    [data-theme="dark"] .banner {
+      background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+    }
+    
+    .banner::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,107,53,0.1) 0%, transparent 50%);
+      animation: pulse 4s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    
+    .banner-content { position: relative; z-index: 1; }
+    
+    .banner h1 {
+      font-size: 2.2rem;
       font-weight: 800;
       margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
     }
     
-    .hero p { opacity: 0.8; font-size: 0.95rem; }
+    .banner p { opacity: 0.85; font-size: 1rem; margin-bottom: 1.5rem; }
     
     .countdown {
       display: flex;
       justify-content: center;
-      gap: 1rem;
-      margin-top: 1.5rem;
+      gap: 0.75rem;
       flex-wrap: wrap;
     }
     
     .countdown-item {
-      background: rgba(255,255,255,0.1);
-      padding: 0.75rem 1rem;
-      border-radius: 10px;
-      min-width: 65px;
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(10px);
+      padding: 0.6rem 1rem;
+      border-radius: 12px;
+      min-width: 60px;
+      border: 1px solid rgba(255,255,255,0.1);
     }
     
     .countdown-item .number {
-      font-size: 1.5rem;
+      font-size: 1.4rem;
       font-weight: 800;
       color: var(--primary);
     }
     
     .countdown-item .label {
-      font-size: 0.7rem;
+      font-size: 0.65rem;
       text-transform: uppercase;
       opacity: 0.7;
     }
     
+    /* Nav pills */
+    .nav-pills {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      padding: 1rem 1rem;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    .nav-pill {
+      padding: 0.6rem 1.2rem;
+      border-radius: 25px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      background: var(--bg);
+      color: var(--text-light);
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+    
+    .nav-pill:hover { background: var(--border); }
+    
+    .nav-pill.active {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 4px 15px rgba(255,107,53,0.3);
+    }
+    
+    /* Theme toggle */
+    .theme-toggle {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(255,255,255,0.1);
+      border: none;
+      padding: 0.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+    
     .container {
-      max-width: 800px;
+      max-width: 700px;
       margin: 0 auto;
       padding: 1.5rem;
     }
     
     .card {
       background: var(--card);
-      border-radius: 14px;
+      border-radius: 16px;
       padding: 1.25rem;
       margin-bottom: 1rem;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+      border: 1px solid var(--border);
+      transition: all 0.3s;
     }
     
     .card h2 {
@@ -90,15 +171,8 @@
       gap: 0.5rem;
     }
     
-    .card h2 span { font-size: 1.3rem; }
-    
-    .input-group {
-      display: flex;
-      gap: 0.75rem;
-      flex-wrap: wrap;
-    }
-    
-    .input-wrap { flex: 1; min-width: 130px; }
+    .input-group { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+    .input-wrap { flex: 1; min-width: 120px; }
     
     label {
       display: block;
@@ -110,11 +184,13 @@
     
     input, select {
       width: 100%;
-      padding: 0.6rem 0.8rem;
-      border: 2px solid #eee;
-      border-radius: 8px;
+      padding: 0.7rem 1rem;
+      border: 2px solid var(--border);
+      border-radius: 10px;
       font-size: 0.95rem;
       font-family: inherit;
+      background: var(--bg);
+      color: var(--text);
     }
     
     input:focus, select:focus { outline: none; border-color: var(--primary); }
@@ -123,191 +199,144 @@
       background: var(--primary);
       color: white;
       border: none;
-      padding: 0.6rem 1.2rem;
-      border-radius: 8px;
+      padding: 0.7rem 1.5rem;
+      border-radius: 10px;
       font-size: 0.9rem;
       font-weight: 600;
       cursor: pointer;
+      transition: transform 0.1s, box-shadow 0.2s;
     }
     
-    .btn-outline {
-      background: transparent;
-      border: 2px solid var(--primary);
-      color: var(--primary);
-    }
+    .btn:hover { box-shadow: 0 4px 15px rgba(255,107,53,0.4); }
+    .btn:active { transform: scale(0.98); }
     
-    .results { display: none; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #eee; }
-    .results.show { display: block; }
+    .results { display: none; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+    .results.show { display: block; animation: fadeIn 0.3s; }
     
-    .pace-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.75rem;
-    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     
-    .pace-item {
-      background: var(--light);
-      padding: 0.75rem;
-      border-radius: 8px;
-      text-align: center;
-    }
-    
-    .pace-item .value { font-size: 1.25rem; font-weight: 800; color: var(--primary); }
+    .pace-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+    .pace-item { background: var(--bg); padding: 0.75rem; border-radius: 12px; text-align: center; }
+    .pace-item .value { font-size: 1.2rem; font-weight: 800; color: var(--primary); }
     .pace-item .label { font-size: 0.7rem; color: var(--text-light); }
     
-    /* Tabs */
-    .tabs { display: flex; gap: 0.5rem; margin-bottom: 1rem; overflow-x: auto; }
-    .tab {
-      padding: 0.5rem 1rem;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      background: var(--light);
-      color: var(--text-light);
-      cursor: pointer;
-      white-space: nowrap;
-      border: none;
-    }
-    .tab.active { background: var(--primary); color: white; }
-    
     .tab-content { display: none; }
-    .tab-content.active { display: block; }
+    .tab-content.active { display: block; animation: fadeIn 0.3s; }
     
-    /* Lists */
     .checklist { list-style: none; }
     .checklist li {
-      padding: 0.6rem 0;
-      border-bottom: 1px solid #eee;
+      padding: 0.7rem 0;
+      border-bottom: 1px solid var(--border);
       display: flex;
-      align-items: flex-start;
-      gap: 0.5rem;
+      align-items: center;
+      gap: 0.6rem;
       font-size: 0.9rem;
     }
     .checklist li:last-child { border: none; }
-    .checklist li::before { content: "☐"; font-size: 1rem; }
+    .checklist li::before { content: '○'; color: var(--primary); }
     
-    .week-grid {
-      display: grid;
-      gap: 0.5rem;
-    }
-    .week {
-      background: var(--light);
-      padding: 0.75rem;
-      border-radius: 8px;
-      font-size: 0.85rem;
-    }
+    .week { background: var(--bg); padding: 0.8rem; border-radius: 10px; margin-bottom: 0.5rem; font-size: 0.85rem; }
     .week strong { color: var(--primary); }
-    .week .days { color: var(--text-light); font-size: 0.8rem; }
     
     .tip-box {
-      background: #fff5f0;
+      background: linear-gradient(135deg, rgba(255,107,53,0.1) 0%, transparent 100%);
       border-left: 3px solid var(--primary);
       padding: 0.75rem 1rem;
-      border-radius: 0 8px 8px 0;
+      border-radius: 0 10px 10px 0;
       font-size: 0.85rem;
       margin-top: 0.75rem;
     }
     
     .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-    @media (max-width: 500px) { .two-col { grid-template-columns: 1fr; } }
     
-    footer {
-      text-align: center;
-      padding: 1.5rem;
-      color: var(--text-light);
-      font-size: 0.8rem;
-    }
+    .footer { text-align: center; padding: 2rem; color: var(--text-light); font-size: 0.8rem; }
     
     @media (max-width: 500px) {
-      .hero h1 { font-size: 1.5rem; }
+      .banner h1 { font-size: 1.6rem; }
       .countdown-item { min-width: 55px; }
-      .countdown-item .number { font-size: 1.25rem; }
+      .countdown-item .number { font-size: 1.2rem; }
+      .nav-pills { gap: 0.4rem; padding: 0.75rem; }
+      .nav-pill { padding: 0.5rem 0.9rem; font-size: 0.8rem; }
+      .two-col { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
-  <div class="hero">
-    <h1>🏃 Running Info</h1>
-    <p>Your first marathon journey</p>
-    
-    <div class="countdown">
-      <div class="countdown-item">
-        <div class="number" id="days">--</div>
-        <div class="label">Days</div>
-      </div>
-      <div class="countdown-item">
-        <div class="number" id="hours">--</div>
-        <div class="label">Hours</div>
-      </div>
-      <div class="countdown-item">
-        <div class="number" id="mins">--</div>
-        <div class="label">Mins</div>
-      </div>
-      <div class="countdown-item">
-        <div class="number" id="secs">--</div>
-        <div class="label">Secs</div>
+  <div class="banner">
+    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">🌙</button>
+    <div class="banner-content">
+      <h1>🏃 Running Info</h1>
+      <p>Your first marathon journey starts here</p>
+      
+      <div class="countdown">
+        <div class="countdown-item"><div class="number" id="days">--</div><div class="label">Days</div></div>
+        <div class="countdown-item"><div class="number" id="hours">--</div><div class="label">Hours</div></div>
+        <div class="countdown-item"><div class="number" id="mins">--</div><div class="label">Mins</div></div>
+        <div class="countdown-item"><div class="number" id="secs">--</div><div class="label">Secs</div></div>
       </div>
     </div>
   </div>
   
+  <!-- Navigation Pills -->
+  <div class="nav-pills">
+    <button class="nav-pill active" onclick="showTab('pace')">⏱️ Pace</button>
+    <button class="nav-pill" onclick="showTab('checklist')">📋 Checklist</button>
+    <button class="nav-pill" onclick="showTab('training')">🏃 Plan</button>
+    <button class="nav-pill" onclick="showTab('nutrition')">🍌 Food</button>
+    <button class="nav-pill" onclick="showTab('gear')">👟 Gear</button>
+    <button class="nav-pill" onclick="showTab('races')">🏁 Races</button>
+    <button class="nav-pill" onclick="showTab('news')">📰 News</button>
+  </div>
+  
   <div class="container">
-    <!-- Quick Tools -->
-    <div class="card">
-      <h2>⏱️ Pace Calculator</h2>
-      <div class="input-group">
-        <div class="input-wrap">
-          <label>Race Date</label>
-          <input type="date" id="raceDate">
-        </div>
-        <div class="input-wrap">
-          <label>Goal Time</label>
-          <select id="goalTime">
-            <option value="">Select...</option>
-            <option value="3:00">Sub 3:00</option>
-            <option value="3:30">Sub 3:30</option>
-            <option value="4:00">Sub 4:00</option>
-            <option value="4:30">Sub 4:30</option>
-            <option value="5:00">Sub 5:00</option>
-            <option value="5:30">Sub 5:30</option>
-            <option value="6:00">Sub 6:00</option>
-            <option value="finish">Just Finish</option>
-          </select>
-        </div>
-      </div>
-      <button class="btn" style="margin-top:0.75rem" onclick="calculate()">Calculate</button>
-      
-      <div class="results" id="results">
-        <div class="pace-grid">
-          <div class="pace-item"><div class="value" id="avgPace">--:--</div><div class="label">/km</div></div>
-          <div class="pace-item"><div class="value" id="avgMile">--:--</div><div class="label">/mile</div></div>
-          <div class="pace-item"><div class="value" id="splitTime">--:--</div><div class="label">Halfway</div></div>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Tabbed Content -->
-    <div class="tabs">
-      <button class="tab active" onclick="showTab('checklist')">📋 Checklist</button>
-      <button class="tab" onclick="showTab('training')">🏃 Plan</button>
-      <button class="tab" onclick="showTab('nutrition')">🍌 Food</button>
-      <button class="tab" onclick="showTab('gear')">👟 Gear</button>
-      <button class="tab" onclick="showTab('races')">🏁 Races</button>
-      <button class="tab" onclick="showTab('news')">📰 News</button>
-    </div>
-    
-    <!-- Checklist Tab -->
-    <div class="tab-content active" id="checklist">
+    <!-- Pace Calculator -->
+    <div class="tab-content active" id="pace">
       <div class="card">
-        <h2><span>📋</span> Race Day Checklist</h2>
+        <h2>⏱️ Pace Calculator</h2>
+        <div class="input-group">
+          <div class="input-wrap">
+            <label>Race Date</label>
+            <input type="date" id="raceDate">
+          </div>
+          <div class="input-wrap">
+            <label>Goal Time</label>
+            <select id="goalTime">
+              <option value="">Select...</option>
+              <option value="3:00">Sub 3:00</option>
+              <option value="3:30">Sub 3:30</option>
+              <option value="4:00">Sub 4:00</option>
+              <option value="4:30">Sub 4:30</option>
+              <option value="5:00">Sub 5:00</option>
+              <option value="5:30">Sub 5:30</option>
+              <option value="6:00">Sub 6:00</option>
+              <option value="finish">Just Finish</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn" style="margin-top:0.75rem" onclick="calculate()">Calculate</button>
+        
+        <div class="results" id="results">
+          <div class="pace-grid">
+            <div class="pace-item"><div class="value" id="avgPace">--:--</div><div class="label">/km</div></div>
+            <div class="pace-item"><div class="value" id="avgMile">--:--</div><div class="label">/mile</div></div>
+            <div class="pace-item"><div class="value" id="splitTime">--:--</div><div class="label">Halfway</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Checklist -->
+    <div class="tab-content" id="checklist">
+      <div class="card">
+        <h2>📋 Race Day Checklist</h2>
         <ul class="checklist">
           <li>Race bib & safety pins</li>
           <li>GPS watch + charger</li>
           <li>Running shoes (worn in!)</li>
           <li>Race-day outfit tested</li>
-          <li>Energy gels (3-4 for race)</li>
+          <li>Energy gels (3-4)</li>
           <li>Water bottle or plan aid stations</li>
-          <li>Phone (for emergencies)</li>
-          <li>Toilet paper (just in case)</li>
+          <li>Phone (emergencies)</li>
           <li>Warm clothes for after</li>
           <li>Recovery snack</li>
         </ul>
@@ -315,52 +344,49 @@
       </div>
       
       <div class="card">
-        <h2><span>🔁</span> Taper (2-3 weeks before)</h2>
+        <h2>🔁 Taper (2-3 weeks before)</h2>
         <ul class="checklist">
-          <li>Reduce mileage by 20-30% each week</li>
-          <li>Keep intensity low — easy runs only</li>
+          <li>Reduce mileage by 20-30%</li>
+          <li>Easy runs only</li>
           <li>Don't try anything new</li>
           <li>Sleep more, stress less</li>
-          <li>Final long run = 2-3 weeks out, max 16km</li>
+          <li>Final long run 2-3 weeks out</li>
         </ul>
       </div>
     </div>
     
-    <!-- Training Tab -->
+    <!-- Training -->
     <div class="tab-content" id="training">
       <div class="card">
-        <h2><span>🏃</span> 8-Week Beginner Plan</h2>
-        <div class="week-grid">
-          <div class="week"><strong>W1-2:</strong> 3 runs/week, 5-8km easy</div>
-          <div class="week"><strong>W3-4:</strong> 4 runs, long run 12-14km</div>
-          <div class="week"><strong>W5-6:</strong> 4 runs, long run 16-20km</div>
-          <div class="week"><strong>W7:</strong> Long run 22km, then cut back</div>
-          <div class="week"><strong>W8:</strong> Taper — easy 8km, rest</div>
-        </div>
-        <div class="tip-box">🏃 Long runs should be slow! Heart rate zone 2.</div>
+        <h2>🏃 8-Week Beginner Plan</h2>
+        <div class="week"><strong>W1-2:</strong> 3 runs/week, 5-8km easy</div>
+        <div class="week"><strong>W3-4:</strong> 4 runs, long run 12-14km</div>
+        <div class="week"><strong>W5-6:</strong> 4 runs, long run 16-20km</div>
+        <div class="week"><strong>W7:</strong> Long run 22km, then cut back</div>
+        <div class="week"><strong>W8:</strong> Taper — easy 8km, rest</div>
+        <div class="tip-box">🏃 Long runs should be slow! HR zone 2.</div>
       </div>
       
       <div class="card">
-        <h2><span>💪</span> Form Tips</h2>
+        <h2>💪 Form Tips</h2>
         <ul class="checklist">
           <li><strong>Cadence:</strong> 170-180 steps/min</li>
-          <li><strong>Posture:</strong> Slight forward lean, not from waist</li>
+          <li><strong>Posture:</strong> Slight forward lean</li>
           <li><strong>Arms:</strong> 90° angle, swing lightly</li>
-          <li><strong>Footstrike:</strong> Land under hip, midfoot</li>
-          <li><strong>Breathing:</strong> 3:3 in/out through nose if possible</li>
+          <li><strong>Breathing:</strong> 3:3 in/out</li>
         </ul>
       </div>
     </div>
     
-    <!-- Nutrition Tab -->
+    <!-- Nutrition -->
     <div class="tab-content" id="nutrition">
       <div class="card">
-        <h2><span>🍌</span> Race Day Nutrition</h2>
+        <h2>🍌 Race Day Nutrition</h2>
         <div class="two-col">
           <div>
             <strong>Night Before</strong>
             <ul class="checklist" style="margin-top:0.5rem">
-              <li>Carb-heavy (pasta, rice)</li>
+              <li>Carb-heavy</li>
               <li>Low fat, low fiber</li>
               <li>Water, not alcohol</li>
             </ul>
@@ -369,7 +395,7 @@
             <strong>Race Morning</strong>
             <ul class="checklist" style="margin-top:0.5rem">
               <li>2-3 hours before</li>
-              <li>Familiar food (toast, banana)</li>
+              <li>Familiar food</li>
               <li>500ml water</li>
             </ul>
           </div>
@@ -377,21 +403,21 @@
       </div>
       
       <div class="card">
-        <h2><span>⚡</span> During the Race</h2>
+        <h2>⚡ During the Race</h2>
         <ul class="checklist">
-          <li>Start fueling at km 30 (not 40!)</li>
+          <li>Start fueling at km 30</li>
           <li>1 gel every 30-40 min</li>
           <li>Drink water at every station</li>
           <li>Don't try anything new!</li>
         </ul>
-        <div class="tip-box">☀️ Hot race? Drink more, add electrolytes.</div>
+        <div class="tip-box">☀️ Hot race? Drink more + electrolytes.</div>
       </div>
     </div>
     
-    <!-- Gear Tab -->
+    <!-- Gear -->
     <div class="tab-content" id="gear">
       <div class="card">
-        <h2><span>👟</span> Shoe Replacement</h2>
+        <h2>👟 Shoe Replacement</h2>
         <div class="input-group">
           <div class="input-wrap">
             <label>Current km</label>
@@ -402,58 +428,79 @@
       </div>
       
       <div class="card">
-        <h2><span>🩰</span> Shoe Types</h2>
+        <h2>🩰 Shoe Types</h2>
         <ul class="checklist">
-          <li><strong>Neutral:</strong> Most runners, good arch support</li>
-          <li><strong>Stability:</strong> Overpronation (feet roll in)</li>
-          <li><strong>Carbon:</strong> Race day only, faster but firm</li>
-          <li><strong>Trail:</strong> Off-road, more grip</li>
+          <li><strong>Neutral:</strong> Most runners</li>
+          <li><strong>Stability:</strong> Overpronation</li>
+          <li><strong>Carbon:</strong> Race day only</li>
+          <li><strong>Trail:</strong> Off-road</li>
         </ul>
-        <div class="tip-box">👟 Replace at 800-1000km for injury prevention.</div>
+        <div class="tip-box">👟 Replace at 800-1000km.</div>
       </div>
     </div>
     
-    <!-- Races Tab -->
+    <!-- Races -->
     <div class="tab-content" id="races">
       <div class="card">
-        <h2><span>📍</span> <span id="locationText">Finding your location...</span></h2>
+        <h2>📍 <span id="locationText">Finding location...</span></h2>
         <div id="racesList"></div>
       </div>
     </div>
     
-    <!-- News Tab -->
+    <!-- News -->
     <div class="tab-content" id="news">
       <div class="card">
-        <h2><span>📰</span> Latest Running News</h2>
-        <div id="newsList">
-          <div class="week" id="newsLoading">Loading news...</div>
-        </div>
-        <div class="tip-box">🔄 Auto-updates daily — just refresh!</div>
+        <h2>📰 Latest Running News</h2>
+        <div id="newsList"><div class="week">Loading...</div></div>
+        <div class="tip-box">🔄 Auto-updates daily — refresh!</div>
       </div>
     </div>
   </div>
   
-  <footer>Made for first-timers 🏃‍♂️</footer>
+  <div class="footer">Made for first-timers 🏃‍♂️</div>
   
   <script>
-    // Set default date to 8 weeks from now
+    // Theme
+    function toggleTheme() {
+      const html = document.documentElement;
+      const btn = document.querySelector('.theme-toggle');
+      if (html.getAttribute('data-theme') === 'dark') {
+        html.setAttribute('data-theme', 'light');
+        btn.textContent = '🌙';
+        localStorage.setItem('theme', 'light');
+      } else {
+        html.setAttribute('data-theme', 'dark');
+        btn.textContent = '☀️';
+        localStorage.setItem('theme', 'dark');
+      }
+    }
+    if (localStorage.getItem('theme') === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      document.querySelector('.theme-toggle').textContent = '☀️';
+    }
+    
+    // Tabs
+    function showTab(id) {
+      document.querySelectorAll('.nav-pill').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelector(`[onclick="showTab('${id}')"]`).classList.add('active');
+      document.getElementById(id).classList.add('active');
+    }
+    
+    // Countdown
     const defaultDate = new Date();
     defaultDate.setDate(defaultDate.getDate() + 56);
     document.getElementById('raceDate').valueAsDate = defaultDate;
     
-    // Countdown
     function updateCountdown() {
       const raceDate = document.getElementById('raceDate').value;
       if (!raceDate) return;
-      const then = new Date(raceDate);
-      const now = new Date();
-      const diff = then - now;
-      if (diff <= 0) return ['0','0','0','0'].forEach((v,i)=>document.querySelectorAll('.countdown-item .number')[i].textContent=v);
-      const [d,h,m,s] = [Math.floor(diff/(1000*60*60*24)), Math.floor(diff%(1000*60*60*24)/3600000), Math.floor(diff%3600000/60000), Math.floor(diff%60000/1000)];
-      document.getElementById('days').textContent = d;
-      document.getElementById('hours').textContent = h;
-      document.getElementById('mins').textContent = m;
-      document.getElementById('secs').textContent = s;
+      const diff = new Date(raceDate) - new Date();
+      if (diff <= 0) return ['days','hours','mins','secs'].forEach(id => document.getElementById(id).textContent = '0');
+      document.getElementById('days').textContent = Math.floor(diff/(1000*60*60*24));
+      document.getElementById('hours').textContent = Math.floor(diff%(1000*60*60*24)/3600000);
+      document.getElementById('mins').textContent = Math.floor(diff%3600000/60000);
+      document.getElementById('secs').textContent = Math.floor(diff%60000/1000);
     }
     setInterval(updateCountdown, 1000);
     updateCountdown();
@@ -473,94 +520,44 @@
       document.getElementById('results').classList.add('show');
     }
     
-    // Shoe tracker
+    // Shoe
     document.getElementById('shoeMiles').addEventListener('input', e => {
       const km = +e.target.value || 0;
       const s = document.getElementById('shoeStatus');
-      if (km < 500) { s.textContent = '✅ Good'; s.style.color = 'green'; }
+      if (km < 500) { s.textContent = '✅ Good'; s.style.color = 'var(--primary)'; }
       else if (km < 800) { s.textContent = '⚠️ Worn — consider replacing'; s.style.color = 'orange'; }
       else { s.textContent = '🛑 Replace — injury risk!'; s.style.color = 'red'; }
     });
     
-    // Tabs
-    function showTab(id) {
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-      document.querySelector(`[onclick="showTab('${id}')"]`).classList.add('active');
-      document.getElementById(id).classList.add('active');
-    }
-    
-    // Race Data - World Major Marathons
+    // Race Data
     const races = [
-      // Europe
-      {name:'Amsterdam Marathon',country:'NL',region:'Europe',date:'Oct 5,2025',url:'https://www.tcsamsterdammarathon.nl/'},
-      {name:'Rotterdam Marathon',country:'NL',region:'Europe',date:'Apr 6,2026',url:'https://www.rotterdammarathon.nl/'},
-      {name:'Paris Marathon',country:'FR',region:'Europe',date:'Apr 5,2026',url:'https://www.schneiderelectricparismarathon.com/'},
-      {name:'Berlin Marathon',country:'DE',region:'Europe',date:'Sep 21,2025',url:'https://www.bmw-berlin-marathon.com/'},
-      {name:'London Marathon',country:'UK',region:'Europe',date:'Apr 21,2026',url:'https://www.tcslondonmarathon.com/'},
-      {name:'Rome Marathon',country:'IT',region:'Europe',date:'Mar 16,2026',url:'https://www.maratonadiroma.it/'},
-      {name:'Madrid Marathon',country:'ES',region:'Europe',date:'Apr 27,2026',url:'https://www.madridmarathon.com/'},
-      {name:'Zurich Marathon',country:'CH',region:'Europe',date:'Apr 6,2026',url:'https://www.zurichmarathon.ch/'},
-      {name:'Vienna City Marathon',country:'AT',region:'Europe',date:'Apr 12,2026',url:'https://www.vienna-marathon.com/'},
-      {name:'Barcelona Marathon',country:'ES',region:'Europe',date:'Mar 16,2026',url:'https://www.zapatillaspie.es/'},
-      // USA
-      {name:'Boston Marathon',country:'US',region:'North America',date:'Apr 21,2025',url:'https://www.baa.org/races/boston-marathon'},
-      {name:'NYC Marathon',country:'US',region:'North America',date:'Nov 2,2025',url:'https://www.nyrr.org/tcsnycmarathon'},
-      {name:'Chicago Marathon',country:'US',region:'North America',date:'Oct 12,2025',url:'https://www.chicagomarathon.com/'},
-      {name:'LA Marathon',country:'US',region:'North America',date:'Mar 16,2026',url:'https://lamarathon.org/'},
-      // Asia
-      {name:'Tokyo Marathon',country:'JP',region:'Asia',date:'Mar 1,2026',url:'https://www.marathon.tokyo/'},
-      {name:'Singapore Marathon',country:'SG',region:'Asia',date:'Dec 2025',url:'https://www.singaporemarathon.com/'},
-      {name:'Seoul Marathon',country:'KR',region:'Asia',date:'Mar 16,2026',url:'https://www.seoulmarathon.org/'},
-      {name:'Dubai Marathon',country:'AE',region:'Asia',date:'Jan 2026',url:'https://www.dubaimarathon.org/'},
-      {name:'Bangkok Marathon',country:'TH',region:'Asia',date:'Nov 2025',url:'https://www.bangkokmarathon.com/'},
-      // Oceania
-      {name:'Sydney Marathon',country:'AU',region:'Oceania',date:'Aug 31,2025',url:'https://sydneymarathon.com/'},
-      {name:'Melbourne Marathon',country:'AU',region:'Oceania',date:'Oct 13,2025',url:'https://melbournemarathon.com.au/'},
-      // South America
-      {name:'Sao Paulo Marathon',country:'BR',region:'South America',date:'Jun 2026',url:'https://www.saopaulomarathon.com/'},
-      {name:'Buenos Aires Marathon',country:'AR',region:'South America',date:'Sep 2025',url:'https://www.baamaraton.com/'},
-      // Africa
-      {name:'Cape Town Marathon',country:'ZA',region:'Africa',date:'Oct 2025',url:'https://capetownmarathon.com/'}
+      {name:'Amsterdam',country:'NL',date:'Oct 2025',url:'https://www.tcsamsterdammarathon.nl/',region:'Europe'},
+      {name:'Rotterdam',country:'NL',date:'Apr 2026',url:'https://www.rotterdammarathon.nl/',region:'Europe'},
+      {name:'Paris',country:'FR',date:'Apr 2026',url:'https://www.schneiderelectricparismarathon.com/',region:'Europe'},
+      {name:'Berlin',country:'DE',date:'Sep 2025',url:'https://www.bmw-berlin-marathon.com/',region:'Europe'},
+      {name:'London',country:'UK',date:'Apr 2026',url:'https://www.tcslondonmarathon.com/',region:'Europe'},
+      {name:'Boston',country:'US',date:'Apr 2025',url:'https://www.baa.org/races/boston-marathon',region:'North America'},
+      {name:'NYC',country:'US',date:'Nov 2025',url:'https://www.nyrr.org/tcsnycmarathon',region:'North America'},
+      {name:'Tokyo',country:'JP',date:'Mar 2026',url:'https://www.marathon.tokyo/',region:'Asia'},
+      {name:'Sydney',country:'AU',date:'Aug 2025',url:'https://sydneymarathon.com/',region:'Oceania'}
     ];
     
-    // Detect location + show relevant races
     fetch('https://ipapi.co/json/').then(r=>r.json()).then(d=>{
-      const country = d.country_code || 'NL';
-      const region = d.continent_code === 'EU' ? 'Europe' : d.continent_code;
       document.getElementById('locationText').textContent = 'Your region: ' + (d.city || d.country_name || 'World');
-      
-      // Show local + nearby + major world races
-      let regionRaces = races.filter(r=>r.country===country || r.region===region);
-      if (regionRaces.length < 3) regionRaces = regionRaces.concat(races.filter(r=>r.region===region));
-      if (regionRaces.length < 5) regionRaces = regionRaces.concat(races.slice(0, 5));
-      regionRaces = [...new Map(regionRaces.map(r=>[r.name,r])).values()].slice(0,8);
-      else if (country === 'DE') regionRaces = races.filter(r=>r.country==='DE').concat(races.filter(r=>['NL','BE','AT','CH'].includes(r.country)));
-      else if (country === 'FR') regionRaces = races.filter(r=>r.country==='FR').concat(races.filter(r=>['BE','NL'].includes(r.country)));
-      else if (country === 'UK') regionRaces = races.filter(r=>r.country==='UK').concat(races.filter(r=>['NL','BE'].includes(r.country)));
-      else regionRaces = regionRaces.slice(0,5);
-      
-      const list = document.getElementById('racesList');
-      list.innerHTML = '<ul class="checklist">' + regionRaces.map(r=>`<li><a href="${r.url}" target="_blank" style="color:inherit;text-decoration:none;"><strong>${r.name}</strong> (${r.date})</a></li>`).join('') + '</ul>';
+      const country = d.country_code || 'NL';
+      let r = races.filter(x=>x.country===country).slice(0,4);
+      if (r.length < 3) r = r.concat(races.slice(0,4));
+      document.getElementById('racesList').innerHTML = '<ul class="checklist">' + r.map(x=>`<li><a href="${x.url}" target="_blank" style="color:inherit;text-decoration:none;">${x.name} (${x.date})</a></li>`).join('') + '</ul>';
     }).catch(()=>{
-      document.getElementById('locationText').textContent = 'Europe';
-      document.getElementById('racesList').innerHTML = '<ul class="checklist">' + races.slice(0,6).map(r=>`<li><strong>${r.name}</strong> (${r.date})</li>`).join('') + '</ul>';
+      document.getElementById('locationText').textContent = 'World';
+      document.getElementById('racesList').innerHTML = '<ul class="checklist">' + races.slice(0,5).map(x=>`<li>${x.name} (${x.date})</li>`).join('') + '</ul>';
     });
     
-    // News - fetch from bundled data (updated via cron)
-    const defaultNews = [
-      {title: "🏆 Tokyo Marathon 2026", date: "Mar 2026", desc: "Elite field announced"},
-      {title: "👟 Nike Alphafly 3 Review", date: "Feb 2026", desc: "Latest super shoe tested"},
-      {title: "🏃 NYC Marathon Recap", date: "Nov 2025", desc: "Winners & records"},
-      {title: "🌡️ Heat Adaptation Guide", date: "Feb 2026", desc: "Train for warm races"},
-      {title: "💊 Caffeine & Running", date: "Feb 2026", desc: "Optimal timing study"}
-    ];
-    
-    // Try to fetch updated news, fall back to default
+    // News
     fetch('news.json').then(r=>r.json()).then(news=>{
       document.getElementById('newsList').innerHTML = news.map(n=>`<div class="week"><strong>${n.title}</strong><br>${n.date} — ${n.desc}</div>`).join('');
     }).catch(()=>{
-      document.getElementById('newsList').innerHTML = defaultNews.map(n=>`<div class="week"><strong>${n.title}</strong><br>${n.date} — ${n.desc}</div>`).join('');
+      document.getElementById('newsList').innerHTML = '<div class="week">Unable to load news</div>';
     });
   </script>
 </body>
