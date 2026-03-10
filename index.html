@@ -295,18 +295,21 @@
         <h2>⏱️ Pace Calculator</h2>
         <div class="input-group">
           <div class="input-wrap">
-            <label>Distance</label>
-            <select id="distance">
-              <option value="42.195">Marathon (42.2km)</option>
-              <option value="21.0975">Half Marathon (21.1km)</option>
+            <label>Distance (km)</label>
+            <input type="number" id="distance" value="42.195" step="0.1" placeholder="42.195">
+            <select id="distanceSelect" onchange="document.getElementById('distance').value=this.value" style="margin-top:0.3rem">
+              <option value="">Or choose:</option>
+              <option value="42.195">Marathon</option>
+              <option value="21.0975">Half Marathon</option>
               <option value="10">10K</option>
               <option value="5">5K</option>
             </select>
           </div>
           <div class="input-wrap">
-            <label>Goal Time</label>
-            <select id="goalTime">
-              <option value="">Select...</option>
+            <label>Goal Time (HH:MM)</label>
+            <input type="text" id="goalTime" placeholder="4:00">
+            <select id="goalSelect" onchange="document.getElementById('goalTime').value=this.value" style="margin-top:0.3rem">
+              <option value="">Or choose:</option>
               <option value="2:30">Sub 2:30 ⭐</option>
               <option value="3:00">Sub 3:00 🏆</option>
               <option value="3:30">Sub 3:30</option>
@@ -315,7 +318,6 @@
               <option value="5:00">Sub 5:00</option>
               <option value="5:30">Sub 5:30</option>
               <option value="6:00">Sub 6:00 🎉</option>
-              <option value="finish">Just Finish!</option>
             </select>
           </div>
         </div>
@@ -518,11 +520,15 @@
     ];
     
     function calculate() {
-      const goal = document.getElementById('goalTime').value;
+      const goal = document.getElementById('goalTime').value.trim();
       const distance = parseFloat(document.getElementById('distance').value);
-      if (!goal) return alert('Select a goal time!');
+      
+      if (!goal) return alert('Enter a goal time!');
+      if (!distance || distance <= 0) return alert('Enter a valid distance!');
       
       const total = parseTime(goal);
+      if (isNaN(total) || total <= 0) return alert('Invalid time format! Use HH:MM (e.g. 4:00)');
+      
       const kmPace = total / distance;
       
       document.getElementById('avgPace').textContent = formatTime(kmPace);
@@ -537,13 +543,8 @@
       
       const famousBox = document.getElementById('famousRunner');
       const famousName = document.getElementById('famousName');
-      if (goalMinutes <= 360) {
-        famousBox.style.display = 'block';
-        famousName.innerHTML = `${closest.name} — ${closest.desc} (${formatTime(closest.pace)})`;
-      } else {
-        famousBox.style.display = 'block';
-        famousName.innerHTML = `${closest.name} — ${closest.desc} (${formatTime(closest.pace)})`;
-      }
+      famousBox.style.display = 'block';
+      famousName.innerHTML = `${closest.name} — ${closest.desc} (ran ${formatTime(closest.pace)})`;
       
       document.getElementById('results').classList.add('show');
     }
