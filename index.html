@@ -269,10 +269,10 @@
       <p>Your first marathon journey starts here</p>
       
       <div class="countdown">
-        <div class="countdown-item"><div class="number" id="days">--</div><div class="label">Days</div></div>
-        <div class="countdown-item"><div class="number" id="hours">--</div><div class="label">Hours</div></div>
-        <div class="countdown-item"><div class="number" id="mins">--</div><div class="label">Mins</div></div>
-        <div class="countdown-item"><div class="number" id="secs">--</div><div class="label">Secs</div></div>
+        <div class="countdown-item"><div class="number" id="days">🏃</div><div class="label">Days</div></div>
+        <div class="countdown-item"><div class="number" id="hours">GO</div><div class="label">Hours</div></div>
+        <div class="countdown-item"><div class="number" id="mins">🌙</div><div class="label">Mins</div></div>
+        <div class="countdown-item"><div class="number" id="secs">!</div><div class="label">Secs</div></div>
       </div>
     </div>
   </div>
@@ -295,21 +295,27 @@
         <h2>⏱️ Pace Calculator</h2>
         <div class="input-group">
           <div class="input-wrap">
-            <label>Race Date</label>
-            <input type="date" id="raceDate">
+            <label>Distance</label>
+            <select id="distance">
+              <option value="42.195">Marathon (42.2km)</option>
+              <option value="21.0975">Half Marathon (21.1km)</option>
+              <option value="10">10K</option>
+              <option value="5">5K</option>
+            </select>
           </div>
           <div class="input-wrap">
             <label>Goal Time</label>
             <select id="goalTime">
               <option value="">Select...</option>
-              <option value="3:00">Sub 3:00</option>
+              <option value="2:30">Sub 2:30 ⭐</option>
+              <option value="3:00">Sub 3:00 🏆</option>
               <option value="3:30">Sub 3:30</option>
               <option value="4:00">Sub 4:00</option>
               <option value="4:30">Sub 4:30</option>
               <option value="5:00">Sub 5:00</option>
               <option value="5:30">Sub 5:30</option>
-              <option value="6:00">Sub 6:00</option>
-              <option value="finish">Just Finish</option>
+              <option value="6:00">Sub 6:00 🎉</option>
+              <option value="finish">Just Finish!</option>
             </select>
           </div>
         </div>
@@ -320,6 +326,9 @@
             <div class="pace-item"><div class="value" id="avgPace">--:--</div><div class="label">/km</div></div>
             <div class="pace-item"><div class="value" id="avgMile">--:--</div><div class="label">/mile</div></div>
             <div class="pace-item"><div class="value" id="splitTime">--:--</div><div class="label">Halfway</div></div>
+          </div>
+          <div class="tip-box" id="famousRunner" style="margin-top:1rem;display:none;">
+            <strong>🦸 Famous Runner Match:</strong> <span id="famousName"></span>
           </div>
         </div>
       </div>
@@ -487,36 +496,55 @@
       document.getElementById(id).classList.add('active');
     }
     
-    // Countdown
-    const defaultDate = new Date();
-    defaultDate.setDate(defaultDate.getDate() + 56);
-    document.getElementById('raceDate').valueAsDate = defaultDate;
-    
-    function updateCountdown() {
-      const raceDate = document.getElementById('raceDate').value;
-      if (!raceDate) return;
-      const diff = new Date(raceDate) - new Date();
-      if (diff <= 0) return ['days','hours','mins','secs'].forEach(id => document.getElementById(id).textContent = '0');
-      document.getElementById('days').textContent = Math.floor(diff/(1000*60*60*24));
-      document.getElementById('hours').textContent = Math.floor(diff%(1000*60*60*24)/3600000);
-      document.getElementById('mins').textContent = Math.floor(diff%3600000/60000);
-      document.getElementById('secs').textContent = Math.floor(diff%60000/1000);
-    }
-    setInterval(updateCountdown, 1000);
-    updateCountdown();
-    document.getElementById('raceDate').addEventListener('change', updateCountdown);
-    
     // Calculate
     function parseTime(t) { return t==='finish'?360:(+t.split(':')[0])*60+(+t.split(':')[1]); }
     function formatTime(m) { return `${Math.floor(m/60)}:${Math.floor(m%60).toString().padStart(2,'0')}`; }
     
+    // Famous runners database
+    const famousRunners = [
+      {name: 'Eliud Kipchoge 🏆', pace: 170, desc: 'GOAT of marathons'},
+      {name: 'Kelvin Kiptum ⚡', pace: 172, desc: 'World record holder'},
+      {name: 'Haile Gebrselassie 🏃', pace: 180, desc: 'Legendary Ethiopian'},
+      {name: 'Mo Farah 🇬🇧', pace: 185, desc: 'Olympic champion'},
+      {name: 'Paula Radcliffe 🇬🇧', pace: 195, desc: 'Women\'s world record'},
+      {name: 'Kenenisa Bekele 🏃', pace: 200, desc: 'Distance legend'},
+      {name: 'Kara Goucher 🏃‍♀️', pace: 210, desc: 'American star'},
+      {name: 'Ryan Reynolds 🎬', pace: 230, desc: 'Actor who runs!'},
+      {name: 'Dylan O\'Brien 🎬', pace: 250, desc: 'Runner actor'},
+      {name: 'Jonah Hill 🎭', pace: 270, desc: 'Comedian on transformation'},
+      {name: 'Oprah Winfrey 📺', pace: 285, desc: 'Media mogul marathoner'},
+      {name: 'Usain Bolt ⚡', pace: 300, desc: 'Fastest man tries marathon'},
+      {name: 'Will Smith 🎤', pace: 330, desc: 'Fresh prince of running'}
+    ];
+    
     function calculate() {
       const goal = document.getElementById('goalTime').value;
+      const distance = parseFloat(document.getElementById('distance').value);
       if (!goal) return alert('Select a goal time!');
+      
       const total = parseTime(goal);
-      document.getElementById('avgPace').textContent = formatTime(total/42.195);
-      document.getElementById('avgMile').textContent = formatTime(total/42.195*1.60934);
-      document.getElementById('splitTime').textContent = formatTime(total/2);
+      const kmPace = total / distance;
+      
+      document.getElementById('avgPace').textContent = formatTime(kmPace);
+      document.getElementById('avgMile').textContent = formatTime(kmPace * 1.60934);
+      document.getElementById('splitTime').textContent = formatTime(total / 2);
+      
+      // Find closest famous runner
+      const goalMinutes = total;
+      const closest = famousRunners.reduce((prev, curr) => 
+        Math.abs(curr.pace - goalMinutes) < Math.abs(prev.pace - goalMinutes) ? curr : prev
+      );
+      
+      const famousBox = document.getElementById('famousRunner');
+      const famousName = document.getElementById('famousName');
+      if (goalMinutes <= 360) {
+        famousBox.style.display = 'block';
+        famousName.innerHTML = `${closest.name} — ${closest.desc} (${formatTime(closest.pace)})`;
+      } else {
+        famousBox.style.display = 'block';
+        famousName.innerHTML = `${closest.name} — ${closest.desc} (${formatTime(closest.pace)})`;
+      }
+      
       document.getElementById('results').classList.add('show');
     }
     
