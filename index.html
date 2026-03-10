@@ -500,7 +500,12 @@
     
     // Calculate
     function parseTime(t) { return t==='finish'?360:(+t.split(':')[0])*60+(+t.split(':')[1]); }
-    function formatTime(m) { return `${Math.floor(m/60)}:${Math.floor(m%60).toString().padStart(2,'0')}`; }
+    function formatTime(m) { 
+      // For pace (minutes per km/mile), show MM:SS
+      const mins = Math.floor(m);
+      const secs = Math.round((m - mins) * 60);
+      return `${mins}:${secs.toString().padStart(2,'0')}`;
+    }
     
     // Famous runners database
     const famousRunners = [
